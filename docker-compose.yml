@@ -1,6 +1,8 @@
 version: '3'
 
 services:
+
+  # Frontend
   app:
     build: ./eltrello-client/Dockerfile
     ports: 
@@ -10,6 +12,7 @@ services:
     networks:
       - trello-network
   
+  # API
   api:
     build: /server/Dockerfile
     ports:
@@ -19,6 +22,7 @@ services:
     networks:
       - trello-network
   
+  # Mongodb
   mongodb:
     image: mongo:latest
     container_name: mongodatabase
@@ -30,5 +34,44 @@ services:
     networks:
       - trello-network
 
+  # Elasticserch
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.5.3
+    #image: docker.elastic.co/elasticsearch/elasticsearch:7.11.1
+    container_name: elasticsearch
+    volumes:
+      - trello-elasticsearch-data:/usr/share/elasticsearch/data
+    environment:
+      #- xpack.monitoring.enabled=true
+      # - xpack.watcher.enabled=false
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+      - "discovery.type=single-node"
+      # - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - target: 9200
+        published: 9200
+    networks:
+      - trello-network
+  
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.5.3
+    # image: docker.elastic.co/kibana/kibana:7.11.1
+    container_name: kibana
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    depends_on:
+      - elasticsearch
+    ports:
+      - target: 5601
+        published: 5601
+    networks:
+      - trello-network
+
+volumes:
+  trello-elasticsearch-data:
+
 networks:
   trello-network:
+    driver: bridge
