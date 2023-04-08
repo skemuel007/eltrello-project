@@ -6,6 +6,8 @@ import * as usersController from './controllers/users';
 import authMiddleware from './middlewares/auth';
 import cors from 'cors';
 import logger from './logger/logger';
+import loggingMiddleware from './middlewares/loggingMiddleware';
+
 
 const app = express();
 const httpServer = createServer(app);
@@ -14,6 +16,7 @@ const io = new Server(httpServer);
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
+app.use(loggingMiddleware);
 
 app.get('/', (req, res) => {
 
