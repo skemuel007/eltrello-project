@@ -5,7 +5,11 @@
         "moduleResolution": "node",
         "sourceMap": true,
         "outDir": "dist",
+        "resolveJsonModule": true,
         "esModuleInterop": true,
         "strict": true
-    }
+    },
+    "exclude": [
+        "node_modules"
+    ]
 }
