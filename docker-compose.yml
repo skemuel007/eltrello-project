@@ -4,9 +4,13 @@ services:
 
   # Frontend
   app:
-    build: ./eltrello-client/Dockerfile
+    build: 
+      context: .
+      dockerfile: ./eltrello-client/Dockerfile # with this setting, files will be reference with absolute path
     ports: 
-      - '4200:4200'
+      - '4200:80'
+    environment:
+      - BASE_URL=http://api:3000/api
     depends_on:
       - api
     networks:
@@ -14,9 +18,14 @@ services:
   
   # API
   api:
-    build: /server/Dockerfile
+    build: ./server/ # with this setting, files will be reference with relative path
     ports:
       - '3000:3000'
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - ELASTIC_URL=http://elasticsearch:9200
+      - MONGODB_URL=mongodb://mongodb:27017/eltrello
     depends_on:
       - mongodb
     networks:
