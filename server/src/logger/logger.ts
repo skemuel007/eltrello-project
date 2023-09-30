@@ -19,6 +19,15 @@ const logger = winston.createLogger({
     }),
     new winston.transports.Console(),
   ],
+  exceptionHandlers: [
+    new ElasticsearchTransport({
+        level: 'error',
+        indexPrefix: 'eltrello-',
+        clientOpts: {
+            node: elasticUrl
+        }
+    })
+  ]
 });
 
 export default logger;
